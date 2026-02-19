@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usersapp")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +16,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Column(name = "nome")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "senha")
     private String password;
+    @Column(name = "ds_app")
+    private String descriptionApp;
 }

@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.loginauthapi.domain.user.User;
+import com.example.loginauthapi.dto.TokenData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class TokenService {
             String token = JWT.create()
                     .withIssuer("login-auth-api")
                     .withSubject(user.getEmail())
+                    .withClaim("app", user.getDescriptionApp())
                     .withExpiresAt(this.generateExpirationDate())
                     .sign(algorithm);
             return token;
@@ -31,14 +33,18 @@ public class TokenService {
         }
     }
 
-    public String validateToken(String token){
+    public TokenData validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
+            var decoded = JWT.require(algorithm)
                     .withIssuer("login-auth-api")
                     .build()
-                    .verify(token)
-                    .getSubject();
+                    .verify(token);
+
+            String email = decoded.getSubject();
+            String app = decoded.getClaim("app").asString();
+
+            return new TokenData(email, app);
         } catch (JWTVerificationException exception) {
             return null;
         }
